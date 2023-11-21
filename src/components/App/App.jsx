@@ -1,8 +1,8 @@
 import { Component } from 'react';
-import { ContactsForm } from './ContactsForm';
-import { ContactList } from './ContactList';
+import { ContactsForm } from '../ContactsForm/ContactsForm';
+import { ContactList } from '../ContactList/ContactList';
 import { nanoid } from 'nanoid';
-import { Filter } from './Filter';
+import { Filter } from '../Filter/Filter';
 import { Wrapper } from './App.styled';
 
 export class App extends Component {
@@ -17,18 +17,23 @@ export class App extends Component {
       id: nanoid(),
     };
     this.setState(prevState => {
-      return {
-        contacts: [...prevState.contacts, name],
-      };
+      const uniqueName = this.state.contacts.find(
+        contact => contact.name.toLowerCase() === newName.name.toLowerCase()
+      );
+
+      if (uniqueName === undefined) {
+        return {
+          contacts: [...prevState.contacts, name],
+        };
+      } else {
+        alert(`${uniqueName.name} is already in contacts`);
+      }
     });
   };
 
   searchFilter = name => {
-    this.setState(prevState => {
-      return {
-        ...prevState,
-        filter: name,
-      };
+    this.setState({
+      filter: name,
     });
   };
 
@@ -52,7 +57,7 @@ export class App extends Component {
     return (
       <Wrapper>
         <h1>Phonebook</h1>
-        <ContactsForm onAdd={this.addContact} contacts={contacts} />
+        <ContactsForm onAdd={this.addContact} />
         <h2>Contacts</h2>
         <Filter filter={filter} onSearch={this.searchFilter} />
         <ContactList contacts={visibleNames} onDelete={this.deleteName} />
