@@ -16,19 +16,18 @@ export class App extends Component {
       ...newName,
       id: nanoid(),
     };
-    this.setState(prevState => {
-      const uniqueName = this.state.contacts.find(
-        contact => contact.name.toLowerCase() === newName.name.toLowerCase()
-      );
-
-      if (uniqueName === undefined) {
+    const isExist = this.state.contacts.find(
+      contact => contact.name.toLowerCase() === newName.name.toLowerCase()
+    );
+    if (isExist) {
+      alert(`${isExist.name} is already in contacts`);
+    } else {
+      this.setState(prevState => {
         return {
           contacts: [...prevState.contacts, name],
         };
-      } else {
-        alert(`${uniqueName.name} is already in contacts`);
-      }
-    });
+      });
+    }
   };
 
   searchFilter = name => {
@@ -45,14 +44,15 @@ export class App extends Component {
     });
   };
 
-  render() {
-    const { contacts, filter } = this.state;
-
-    const visibleNames = contacts.filter(contact => {
-      const hasName = contact.name.toLowerCase().includes(filter.toLowerCase());
-
-      return hasName;
+  getFiltredNames() {
+    const { filter, contacts } = this.state;
+    return contacts.filter(contact => {
+      return contact.name.toLowerCase().includes(filter.toLowerCase());
     });
+  }
+
+  render() {
+    const { filter } = this.state;
 
     return (
       <Wrapper>
@@ -60,7 +60,10 @@ export class App extends Component {
         <ContactsForm onAdd={this.addContact} />
         <h2>Contacts</h2>
         <Filter filter={filter} onSearch={this.searchFilter} />
-        <ContactList contacts={visibleNames} onDelete={this.deleteName} />
+        <ContactList
+          contacts={this.getFiltredNames()}
+          onDelete={this.deleteName}
+        />
       </Wrapper>
     );
   }
